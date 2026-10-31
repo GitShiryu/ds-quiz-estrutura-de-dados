@@ -10,10 +10,12 @@ Nada em andamento.
 
 ## Próximos passos
 
-1. **Decisão pendente do dono**: deploy público (GitHub Pages ou Vercel). Hoje o card do
-   portfólio está como "em laboratório"; com deploy viraria "demo no ar".
-2. Se houver deploy público, incluir os cards "Conheça outros projetos" no rodapé do app
-   (padrão dos demais sites do dono) e acrescentar o quiz na lista dos outros sites.
+1. Quando houver deploy público, acrescentar o quiz na lista de projetos dos outros sites
+   que já exibem os cards. Hoje ele não entra: a regra é só URL pública verificada.
+2. **Avisar o dono**: o link do Já Tô Chegando no portfólio (`shopdigitalbrasil.com`) está
+   quebrado para qualquer visitante — o DNS do domínio e do `www` resolve para `127.0.0.1`,
+   confirmado pelos resolvedores públicos 8.8.8.8 e 1.1.1.1. Por isso o projeto ficou de
+   fora dos cards. Decidir se corrige o DNS ou troca o link no portfólio.
 3. Banco de questões tem 9 itens; ampliar quando houver material novo (basta editar
    `questionsDB` no topo do `script.js`, o resto se ajusta sozinho).
 4. Avaliar embaralhar a ordem das alternativas (hoje o gabarito é um índice fixo, então
@@ -29,6 +31,19 @@ Nada em andamento.
   versão da raiz.
 
 ## Concluído
+
+**2026-10-30 — Cards "Conheça outros projetos"**
+
+- Seção no fim do app (fora dos painéis, aparece em todas as abas), no padrão do Saber+:
+  card com print, status, descrição, stack e "Visitar o site", mais o link do portfólio.
+- 7 cards: The Lost Goddess, Vigia Cidadão, Apuração 2º Turno 2026, Saber+, AdvPilot,
+  Central do Despachante e Sistemas PDV/ERP.
+- **Já Tô Chegando ficou de fora**: `shopdigitalbrasil.com` não resolve publicamente
+  (DNS aponta para 127.0.0.1). A regra é só URL pública verificada.
+- Saber+ não tinha print; capturei um e guardei também em `MagenCode/images/project-saber.png`.
+- Imagens redimensionadas para 640px de largura (283 KB no total, contra ~1,1 MB originais).
+- VERIFICADO: as 8 URLs testadas com `curl` (7 deram 200, shopdigitalbrasil deu falha de
+  conexão); suíte de testes seguiu em 57/57; seção conferida por print.
 
 **2026-10-30 — Melhorias, documentação e publicação no GitHub**
 

@@ -76,9 +76,10 @@ Se o Chrome não estiver num caminho padrão: `CHROME=/caminho/para/chrome bash 
 ## Estrutura
 
 ```
-index.html     telas (quiz, categorias, ranking)
+index.html     telas (quiz, categorias, ranking) e a seção de outros projetos
 style.css      estilos, incluindo o layout responsivo
 script.js      banco de questões + toda a lógica
+images/        prints dos outros projetos do autor, usados nos cards do fim da página
 teste/         suíte automatizada e o runner
 legado/        protótipo original, de arquivo único com Tailwind via CDN
 docs/          imagens do README

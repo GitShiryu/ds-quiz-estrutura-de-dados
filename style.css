@@ -511,6 +511,153 @@ body {
     }
 }
 
+/* ---------------- Outros projetos do autor ---------------- */
+
+.outros-projetos {
+    border-top: 1px solid var(--border-color);
+    padding-top: 32px;
+    margin-top: 16px;
+}
+
+.outros-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.outros-head h2 {
+    font-size: 1.25rem;
+}
+
+.outros-head p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.outros-link {
+    color: var(--accent-yellow);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.outros-link:hover {
+    text-decoration: underline;
+}
+
+.outros-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.outros-grid > li {
+    display: flex;
+}
+
+.outros-grid a {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.outros-grid a:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-yellow);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.outros-grid img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: top;
+    border-bottom: 1px solid var(--border-color);
+    display: block;
+}
+
+.outros-corpo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px;
+    gap: 8px;
+}
+
+.outros-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    background-color: rgba(16, 185, 129, 0.12);
+    color: var(--success-green);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.outros-status .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--success-green);
+}
+
+.outros-corpo h3 {
+    font-size: 1rem;
+}
+
+.outros-corpo p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.outros-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.outros-chips span {
+    background-color: #1e293b;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.outros-cta {
+    margin-top: auto;
+    padding-top: 10px;
+    color: var(--accent-yellow);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.outros-rodape {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 24px;
+    padding-bottom: 8px;
+}
+
+.outros-rodape a {
+    color: var(--text-muted);
+}
+
 /* Nenhum texto longo (ou URL colada numa questão) empurra o layout para os lados. */
 #question-text,
 .opt-btn,
