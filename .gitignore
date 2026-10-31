@@ -1,0 +1,12 @@
+# saída temporária da suíte de testes
+teste/.tmp/
+
+# sistema operacional
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# editores
+.vscode/
+.idea/
+*.swp

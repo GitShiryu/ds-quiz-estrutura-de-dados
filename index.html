@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Quiz - Estrutura de Dados</title>
+    <meta name="description" content="Quiz gamificado de Estrutura de Dados: ordenação, árvores binárias e grafos, com correção comentada a cada resposta.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="skip-link" href="#inicio-view">Pular para o conteúdo</a>
+
+    <div class="app-layout">
+        <!-- Barra Lateral de Navegação -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>🎮 DS Quiz</h2>
+                <span>Estrutura de Dados</span>
+            </div>
+            <nav class="menu" role="tablist" aria-label="Seções do aplicativo">
+                <button class="nav-item active" role="tab" aria-selected="true" aria-controls="inicio-view" data-tab="inicio" onclick="switchTab('inicio')">🏠 Início</button>
+                <button class="nav-item" role="tab" aria-selected="false" aria-controls="categorias-view" data-tab="categorias" onclick="switchTab('categorias')">📚 Categorias</button>
+                <button class="nav-item" role="tab" aria-selected="false" aria-controls="ranking-view" data-tab="ranking" onclick="switchTab('ranking')">🏆 Ranking</button>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Cabeçalho -->
+            <header class="top-bar">
+                <div class="user-profile">
+                    <span class="avatar" aria-hidden="true">👤</span>
+                    <div class="user-info">
+                        <strong>Eli Rômulo</strong>
+                        <span class="level-tag">Nível <span id="user-level">1</span></span>
+                    </div>
+                </div>
+                <div class="streak-badge">
+                    🔥 <span id="streak-days">1</span> <span id="streak-label">dia de estudo</span>
+                </div>
+            </header>
+
+            <!-- Painel do Jogo / Questões -->
+            <section id="inicio-view" class="view-panel active" role="tabpanel" aria-label="Quiz">
+                <div class="quiz-card">
+                    <div class="quiz-header">
+                        <div class="quiz-header-left">
+                            <span class="category-tag" id="question-category">Listas</span>
+                            <span class="question-progress" id="question-progress"></span>
+                        </div>
+                        <div class="score-tracker">
+                            Pontuação: <strong id="score-val">0</strong> pts | XP: <strong id="xp-val">650</strong>
+                        </div>
+                    </div>
+
+                    <h2 id="question-text">A carregar a questão...</h2>
+
+                    <div id="options-list" class="options-group">
+                        <!-- Opções serão injetadas via JavaScript -->
+                    </div>
+
+                    <div id="explanation-box" class="explanation-card hidden" role="status" aria-live="polite">
+                        <p id="explanation-text"></p>
+                    </div>
+
+                    <div class="quiz-actions">
+                        <div class="quiz-actions-left">
+                            <button id="prev-btn" class="btn btn-secondary hidden" onclick="prevQuestion()">⬅️ Voltar</button>
+                            <button id="skip-btn" class="btn btn-secondary" onclick="skipQuestion()">⏭️ Pular (-10 pts)</button>
+                            <button id="review-btn" class="btn btn-secondary hidden" onclick="praticarErros()">🔁 Revisar erros</button>
+                        </div>
+                        <button id="confirm-btn" class="btn btn-primary" onclick="confirmAnswer()">Confirmar Resposta ➔</button>
+                    </div>
+
+                    <p class="atalhos">
+                        Atalhos: <kbd>A</kbd>–<kbd>E</kbd> ou <kbd>1</kbd>–<kbd>5</kbd> escolhem ·
+                        <kbd>Enter</kbd> confirma e avança · <kbd>←</kbd> volta
+                    </p>
+                </div>
+            </section>
+
+            <!-- Painel de Categorias -->
+            <section id="categorias-view" class="view-panel" role="tabpanel" aria-label="Categorias">
+                <div class="panel-head">
+                    <div>
+                        <h2>📚 Categorias</h2>
+                        <p>Escolha um assunto para praticar. O progresso fica salvo neste navegador.</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="confirmarZerar()">♻️ Zerar progresso</button>
+                </div>
+                <div id="categorias-grid" class="cat-grid">
+                    <!-- Cards de categoria serão injetados via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Painel de Ranking -->
+            <section id="ranking-view" class="view-panel" role="tabpanel" aria-label="Ranking">
+                <div class="panel-head">
+                    <div>
+                        <h2>🏆 Ranking</h2>
+                        <p>Sua pontuação entra na tabela em tempo real. Os demais jogadores são fictícios, só para dar escala.</p>
+                    </div>
+                </div>
+                <div id="ranking-list" class="rank-list">
+                    <!-- Linhas do ranking serão injetadas via JavaScript -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

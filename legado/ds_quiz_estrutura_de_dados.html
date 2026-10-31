@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Quiz - Estrutura de Dados</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        ds: {
+                            bg: '#0b0f17',
+                            card: '#161f2e',
+                            cardHover: '#1c283c',
+                            border: '#212e42',
+                            borderLight: '#2e3e56',
+                            yellow: '#facc15',
+                            yellowHover: '#eab308',
+                            cyan: '#38bdf8',
+                            green: '#22c55e',
+                            greenHover: '#16a34a',
+                            red: '#ef4444',
+                            purple: '#a855f7',
+                            text: '#94a3b8',
+                            textWhite: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f17;
+            color: #94a3b8;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #212e42;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+
+        .glow-yellow {
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.25);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+        .glow-green {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:hover:not(.disabled) {
+            border-color: #38bdf8;
+            background-color: #1c283c;
+            transform: translateY(-1px);
+        }
+
+        /* Selected State */
+        .option-card.selected {
+            border-color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        /* Correct State */
+        .option-card.correct {
+            border-color: #22c55e !important;
+            background-color: rgba(34, 197, 94, 0.15) !important;
+            color: #f8fafc !important;
+        }
+
+        /* Wrong State */
+        .option-card.wrong {
+            border-color: #ef4444 !important;
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            color: #f8fafc !important;
+        }
+
+        .custom-ring {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 ease-in-out bg-ds-card border border-ds-border text-ds-textWhite px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center bg-ds-yellow/20 text-ds-yellow">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div>
+            <h4 id="toast-title" class="font-bold text-sm text-white">Notificação</h4>
+            <p id="toast-msg" class="text-xs text-ds-text">Mensagem da plataforma</p>
+        </div>
+    </div>
+
+    <div class="flex flex-1 min-h-screen">
+        
+        <!-- SIDEBAR (LEFT) -->
+        <aside class="w-64 bg-ds-bg border-r border-ds-border p-5 flex flex-col justify-between hidden md:flex shrink-0">
+            <div>
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 mb-8 px-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-cyan-500/30">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg text-ds-textWhite leading-none tracking-wide">DS Quiz</h1>
+                        <span class="text-xs text-ds-cyan font-medium">Estrutura de Dados</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1.5" id="sidebar-nav">
+                    <a href="#" data-view="dashboard" class="nav-btn active flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-textWhite bg-blue-600/20 border border-blue-500/40 text-ds-cyan transition">
+                        <i class="fa-solid fa-house w-5 text-center"></i>
+                        <span>Início</span>
+                    </a>
+                    <a href="#" data-view="quiz" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-gamepad w-5 text-center"></i>
+                        <span>Jogar</span>
+                    </a>
+                    <a href="#" data-view="categories" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                        <span>Categorias</span>
+                    </a>
+                    <a href="#" data-view="ranking" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-trophy w-5 text-center"></i>
+                        <span>Ranking</span>
+                    </a>
+                    <a href="#" data-view="achievements" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-star w-5 text-center"></i>
+                        <span>Conquistas</span>
+                    </a>
+                    <a href="#" data-action="profile" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-user w-5 text-center"></i>
+                        <span>Perfil</span>
+                    </a>
+                    <a href="#" data-action="settings" class="nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>Configurações</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Side Card: Motivation -->
+            <div class="bg-gradient-to-b from-ds-card to-ds-bg border border-ds-border p-4 rounded-2xl relative overflow-hidden text-center">
+                <div class="absolute -right-4 -bottom-4 text-ds-cyan/10 text-7xl">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-ds-cyan/10 text-ds-cyan flex items-center justify-center">
+                    <i class="fa-solid fa-mountain-sun text-lg"></i>
+                </div>
+                <h3 class="font-bold text-xs text-ds-textWhite mb-1">Pequenos passos, grandes conquistas!</h3>
+                <p class="text-[11px] text-ds-text leading-tight mb-3">Cada resposta certa te aproxima do nível avançado.</p>
+                <div class="w-full bg-ds-bg h-1.5 rounded-full overflow-hidden mb-1">
+                    <div id="sidebar-progress" class="bg-ds-cyan h-full w-2/3 transition-all duration-500"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTAINER -->
+        <div class="flex-1 flex flex-col min-w-0 bg-ds-bg overflow-y-auto">
+            
+            <!-- TOP HEADER -->
+            <header class="h-20 border-b border-ds-border px-6 flex items-center justify-between sticky top-0 bg-ds-bg/95 backdrop-blur z-30">
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-ds-text hover:text-white text-xl">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="hidden sm:flex items-center space-x-2 text-xs font-semibold text-ds-text">
+                    <span class="text-ds-cyan"><i class="fa-solid fa-graduation-cap mr-1"></i> UNIASSELVI</span>
+                    <span>/</span>
+                    <span class="text-ds-textWhite">Análise e Desenvolvimento de Sistemas</span>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-4">
+                    <!-- Streak Tag -->
+                    <div class="flex items-center space-x-2 bg-ds-card border border-ds-border px-3 py-1.5 rounded-full text-xs font-bold text-orange-400">
+                        <i class="fa-solid fa-fire text-orange-500 animate-pulse"></i>
+                        <span id="streak-count">12 dias consecutivos</span>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <button id="btn-notifications" class="w-10 h-10 rounded-xl bg-ds-card border border-ds-border flex items-center justify-center text-ds-text hover:text-ds-textWhite hover:border-ds-borderLight transition relative">
+                        <i class="fa-regular fa-bell text-sm"></i>
+                        <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-ds-yellow"></span>
+                    </button>
+
+                    <!-- User Profile Button -->
+                    <div class="flex items-center space-x-3 border-l border-ds-border pl-4">
+                        <div class="text-right hidden sm:block">
+                            <h4 class="font-bold text-xs text-ds-textWhite leading-tight" id="header-user-name">Eli Rômulo</h4>
+                            <span class="text-[10px] font-semibold text-ds-cyan bg-ds-cyan/10 px-1.5 py-0.5 rounded" id="header-user-level">Nível 4</span>
+                        </div>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=EliRomulo" alt="User Avatar" class="w-10 h-10 rounded-xl bg-ds-card border border-ds-border p-0.5">
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl mx-auto w-full">
+                
+                <!-- VIEW 1: DASHBOARD / INÍCIO -->
+                <div id="view-dashboard" class="space-y-6">
+                    
+                    <!-- GRID: HERO BANNER & STATS CARD -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Hero Card (2 Cols) -->
+                        <div class="lg:col-span-2 bg-gradient-to-r from-ds-card via-ds-card to-blue-950/40 border border-ds-border p-6 sm:p-8 rounded-3xl relative overflow-hidden flex flex-col justify-between">
+                            <div class="absolute -right-10 -top-10 w-60 h-60 bg-ds-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <div class="max-w-md z-10">
+                                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-ds-yellow/10 border border-ds-yellow/30 text-ds-yellow text-xs font-bold mb-4">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>Simulados & Provas Acadêmicas</span>
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-extrabold text-ds-textWhite tracking-tight mb-3 leading-tight">
+                                    Teste seus conhecimentos em <span class="text-transparent bg-clip-text bg-gradient-to-r from-ds-cyan to-blue-400">Estrutura de Dados!</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-ds-text mb-6 leading-relaxed">
+                                    Responda às questões, acumule pontos, suba de nível e se torne um mestre dos algoritmos de ordenação, árvores e ponteiros!
+                                </p>
+                                <button id="btn-start-hero" class="px-6 py-3.5 rounded-xl bg-ds-yellow text-ds-bg font-extrabold text-sm hover:bg-ds-yellowHover transition flex items-center space-x-2 glow-yellow shadow-lg">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>Jogar Agora</span>
+                                </button>
+                            </div>
+
+                            <!-- Hero Illustration/Decoration -->
+                            <div class="hidden sm:block absolute right-6 bottom-6 opacity-80 pointer-events-none">
+                                <div class="w-40 h-40 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/30 border border-ds-cyan/30 flex items-center justify-center backdrop-blur text-ds-cyan text-6xl shadow-2xl">
+                                    <i class="fa-solid fa-code-branch"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Card (1 Col) -->
+                        <div class="bg-ds-card border border-ds-border p-6 rounded-3xl flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-ds-cyan text-xl font-bold">
+                                        4
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-semibold text-ds-text block">Nível 4</span>
+                                        <h3 class="font-extrabold text-sm text-ds-textWhite" id="user-title">DevMaster</h3>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold text-ds-text bg-ds-bg px-2.5 py-1 rounded-lg border border-ds-border" id="user-xp-text">650 / 1.000 XP</span>
+                            </div>
+
+                            <!-- XP Bar -->
+                            <div class="mb-6">
+                                <div class="w-full bg-ds-bg h-3 rounded-full overflow-hidden p-0.5 border border-ds-border">
+                                    <div id="user-xp-bar" class="bg-gradient-to-r from-ds-cyan to-blue-500 h-full rounded-full w-[65%] transition-all duration-500"></div>
+                                </div>
+                            </div>
+
+                            <!-- Stats Grid -->
+                            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-ds-border">
+                                <div class="text-center p-2 rounded-xl bg-ds-bg border border-ds-border">
+                                    <div class="text-ds-yellow text-sm mb-1"><i class="fa-solid fa-star"></i></div>
+                                    <span class="text-xs font-extrabold text-ds-textWhite block" id="stat-points">2.450</span>
+                                    <span class="text-[10px] text-ds-text">Pontos</span>
+                                </div>
+                                <div class="text-center p-2 rounded-xl bg-ds-bg border border-ds-border">
+                                    <div class="text-orange-500 text-sm mb-1"><i class="fa-solid fa-fire"></i></div>
+                                    <span class="text-xs font-extrabold text-ds-textWhite block" id="stat-streak">12 dias</span>
+                                    <span class="text-[10px] text-ds-text">Sequência</span>
+                                </div>
+                                <div class="text-center p-2 rounded-xl bg-ds-bg border border-ds-border">
+                                    <div class="text-ds-purple text-sm mb-1"><i class="fa-solid fa-ranking-star"></i></div>
+                                    <span class="text-xs font-extrabold text-ds-textWhite block" id="stat-rank">#7</span>
+                                    <span class="text-[10px] text-ds-text">Ranking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MAIN LAYOUT: QUIZ CARD (LEFT 2 COLS) + RIGHT SIDEBAR (1 COL) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- LEFT SECTION: ACTIVE QUIZ DISPLAY CARD -->
+                        <div class="lg:col-span-2 space-y-6">
+                            
+                            <div class="bg-ds-card border border-ds-border p-6 sm:p-8 rounded-3xl shadow-xl relative" id="quiz-card-container">
+                                
+                                <!-- Quiz Header Meta -->
+                                <div class="flex items-center justify-between pb-5 border-b border-ds-border mb-6">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-8 h-8 rounded-lg bg-ds-cyan/10 text-ds-cyan flex items-center justify-center text-xs font-bold">
+                                            <i class="fa-solid fa-code"></i>
+                                        </span>
+                                        <div>
+                                            <span class="text-xs font-bold text-ds-cyan uppercase tracking-wider block" id="q-category">Listas</span>
+                                            <h4 class="text-xs text-ds-text font-medium" id="q-number-text">Questão 3 de 10</h4>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs font-extrabold text-ds-yellow bg-ds-yellow/10 border border-ds-yellow/20 px-3 py-1 rounded-full">
+                                            <i class="fa-solid fa-star text-xs mr-1"></i> Pontuação: <span id="current-score-val">300</span> pts
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar for Current Quiz Batch -->
+                                <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden mb-6 border border-ds-border">
+                                    <div id="quiz-progress-bar" class="bg-gradient-to-r from-ds-cyan to-ds-green h-full w-3/10 transition-all duration-300"></div>
+                                </div>
+
+                                <!-- Question Title -->
+                                <h3 class="text-lg sm:text-xl font-bold text-ds-textWhite leading-snug mb-6" id="q-title">
+                                    Qual das alternativas abaixo melhor descreve uma lista duplamente encadeada (DLL)?
+                                </h3>
+
+                                <!-- Answer Options Stack -->
+                                <div class="space-y-3 mb-8" id="options-stack">
+                                    <!-- Options injected dynamically by JS -->
+                                </div>
+
+                                <!-- Explanation Box (Hidden until answer confirmed) -->
+                                <div id="explanation-box" class="hidden mb-6 p-4 rounded-2xl bg-ds-bg border border-ds-border">
+                                    <div class="flex items-start space-x-3">
+                                        <div id="explanation-icon" class="w-8 h-8 rounded-lg bg-ds-green/20 text-ds-green flex items-center justify-center shrink-0 mt-0.5">
+                                            <i class="fa-solid fa-lightbulb"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="text-xs font-bold text-ds-textWhite mb-1" id="explanation-title">Explicação Técnica</h5>
+                                            <p class="text-xs text-ds-text leading-relaxed" id="explanation-text">
+                                                Na lista duplamente encadeada, cada nó guarda os dados e possui dois ponteiros: um apontando para o elemento anterior e outro para o próximo nó.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Footer Buttons -->
+                                <div class="flex items-center justify-between pt-4 border-t border-ds-border">
+                                    <button id="btn-skip" class="px-4 py-2.5 rounded-xl bg-ds-bg border border-ds-border text-ds-text hover:text-ds-textWhite hover:border-ds-borderLight transition text-xs font-bold flex items-center space-x-2">
+                                        <i class="fa-solid fa-forward text-xs"></i>
+                                        <span>Pular (-10 pts)</span>
+                                    </button>
+
+                                    <button id="btn-confirm" class="px-6 py-3 rounded-xl bg-ds-yellow text-ds-bg font-extrabold text-sm hover:bg-ds-yellowHover transition flex items-center space-x-2 glow-yellow shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span id="btn-confirm-text">Confirmar Resposta</span>
+                                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Footer Motivational Banner -->
+                            <div class="bg-ds-card border border-ds-border p-4 rounded-2xl flex items-center space-x-4">
+                                <div class="w-10 h-10 rounded-xl bg-ds-yellow/10 text-ds-yellow flex items-center justify-center text-lg shrink-0">
+                                    <i class="fa-solid fa-trophy"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-xs font-bold text-ds-textWhite">Você está indo muito bem!</h4>
+                                    <p class="text-[11px] text-ds-text">Continue estudando para desbloquear novas conquistas e chegar ao topo!</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT SECTION: WIDGETS COLUMN (PROGRESS, BADGES, LEADERBOARD) -->
+                        <div class="space-y-6">
+                            
+                            <!-- Widget 1: Progresso por Categoria -->
+                            <div class="bg-ds-card border border-ds-border p-5 rounded-3xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-xs text-ds-textWhite uppercase tracking-wider">Progresso por Categoria</h3>
+                                    <i class="fa-solid fa-chart-pie text-ds-text text-xs"></i>
+                                </div>
+
+                                <div class="space-y-3.5">
+                                    <!-- Item 1 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-semibold text-ds-textWhite flex items-center">
+                                                <i class="fa-solid fa-list-check text-ds-cyan mr-2 text-[10px]"></i> Arrays e Listas
+                                            </span>
+                                            <span class="text-ds-text text-[11px] font-medium">4/12 (33%)</span>
+                                        </div>
+                                        <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden border border-ds-border">
+                                            <div class="bg-ds-cyan h-full w-[33%] rounded-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 2 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-semibold text-ds-textWhite flex items-center">
+                                                <i class="fa-solid fa-network-wired text-ds-green mr-2 text-[10px]"></i> Árvores
+                                            </span>
+                                            <span class="text-ds-text text-[11px] font-medium">3/15 (20%)</span>
+                                        </div>
+                                        <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden border border-ds-border">
+                                            <div class="bg-ds-green h-full w-[20%] rounded-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 3 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-semibold text-ds-textWhite flex items-center">
+                                                <i class="fa-solid fa-[#a855f7] text-ds-purple mr-2 text-[10px]"></i> Grafos
+                                            </span>
+                                            <span class="text-ds-text text-[11px] font-medium">1/10 (10%)</span>
+                                        </div>
+                                        <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden border border-ds-border">
+                                            <div class="bg-ds-purple h-full w-[10%] rounded-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 4 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-semibold text-ds-textWhite flex items-center">
+                                                <i class="fa-solid fa-layer-group text-ds-yellow mr-2 text-[10px]"></i> Pilhas e Filas
+                                            </span>
+                                            <span class="text-ds-text text-[11px] font-medium">2/8 (25%)</span>
+                                        </div>
+                                        <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden border border-ds-border">
+                                            <div class="bg-ds-yellow h-full w-[25%] rounded-full"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 5 -->
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-semibold text-ds-textWhite flex items-center">
+                                                <i class="fa-solid fa-hashtag text-blue-400 mr-2 text-[10px]"></i> Algoritmos Ordenação
+                                            </span>
+                                            <span class="text-ds-text text-[11px] font-medium">5/10 (50%)</span>
+                                        </div>
+                                        <div class="w-full bg-ds-bg h-2 rounded-full overflow-hidden border border-ds-border">
+                                            <div class="bg-blue-400 h-full w-[50%] rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Widget 2: Conquistas Recentes -->
+                            <div class="bg-ds-card border border-ds-border p-5 rounded-3xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-xs text-ds-textWhite uppercase tracking-wider">Conquistas Recentes</h3>
+                                    <button class="text-[11px] text-ds-cyan hover:underline font-semibold nav-switch" data-target="achievements">Ver todas</button>
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    <div class="p-2 rounded-2xl bg-ds-bg border border-ds-border flex flex-col items-center">
+                                        <div class="w-9 h-9 rounded-xl bg-ds-green/10 text-ds-green border border-ds-green/30 flex items-center justify-center text-sm mb-1">
+                                            <i class="fa-solid fa-bullseye"></i>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-ds-textWhite leading-tight">Primeiro Acerto</span>
+                                        <span class="text-[9px] text-ds-green font-bold">+50 pts</span>
+                                    </div>
+
+                                    <div class="p-2 rounded-2xl bg-ds-bg border border-ds-border flex flex-col items-center">
+                                        <div class="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/30 flex items-center justify-center text-sm mb-1">
+                                            <i class="fa-solid fa-fire"></i>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-ds-textWhite leading-tight">Sequência 5</span>
+                                        <span class="text-[9px] text-orange-400 font-bold">+100 pts</span>
+                                    </div>
+
+                                    <div class="p-2 rounded-2xl bg-ds-bg border border-ds-border flex flex-col items-center">
+                                        <div class="w-9 h-9 rounded-xl bg-ds-purple/10 text-ds-purple border border-ds-purple/30 flex items-center justify-center text-sm mb-1">
+                                            <i class="fa-solid fa-cubes"></i>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-ds-textWhite leading-tight">Mestre Listas</span>
+                                        <span class="text-[9px] text-ds-purple font-bold">+200 pts</span>
+                                    </div>
+
+                                    <div class="p-2 rounded-2xl bg-ds-bg border border-ds-border flex flex-col items-center">
+                                        <div class="w-9 h-9 rounded-xl bg-ds-yellow/10 text-ds-yellow border border-ds-yellow/30 flex items-center justify-center text-sm mb-1">
+                                            <i class="fa-solid fa-crown"></i>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-ds-textWhite leading-tight">Top 10</span>
+                                        <span class="text-[9px] text-ds-yellow font-bold">+500 pts</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Widget 3: Ranking Geral -->
+                            <div class="bg-ds-card border border-ds-border p-5 rounded-3xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-xs text-ds-textWhite uppercase tracking-wider">Ranking Geral</h3>
+                                    <button class="text-[11px] text-ds-cyan hover:underline font-semibold nav-switch" data-target="ranking">Ver todas</button>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <!-- #1 -->
+                                    <div class="flex items-center justify-between p-2 rounded-xl bg-ds-bg/60 border border-ds-border text-xs">
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="w-5 text-center font-bold text-ds-yellow"><i class="fa-solid fa-crown"></i></span>
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=DevMaster" class="w-7 h-7 rounded-lg bg-ds-card border border-ds-border">
+                                            <span class="font-semibold text-ds-textWhite">DevMaster</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-extrabold text-ds-textWhite block">3.980</span>
+                                            <span class="text-[9px] text-ds-text">Nível 8</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- #2 -->
+                                    <div class="flex items-center justify-between p-2 rounded-xl bg-ds-bg/60 border border-ds-border text-xs">
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="w-5 text-center font-bold text-slate-300">2</span>
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=CodeQueen" class="w-7 h-7 rounded-lg bg-ds-card border border-ds-border">
+                                            <span class="font-semibold text-ds-textWhite">CodeQueen</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-extrabold text-ds-textWhite block">3.760</span>
+                                            <span class="text-[9px] text-ds-text">Nível 7</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- #3 -->
+                                    <div class="flex items-center justify-between p-2 rounded-xl bg-ds-bg/60 border border-ds-border text-xs">
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="w-5 text-center font-bold text-amber-600">3</span>
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Algoritmo" class="w-7 h-7 rounded-lg bg-ds-card border border-ds-border">
+                                            <span class="font-semibold text-ds-textWhite">Algoritmo</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-extrabold text-ds-textWhite block">3.420</span>
+                                            <span class="text-[9px] text-ds-text">Nível 6</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- #7 (Current User) -->
+                                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-blue-600/20 border border-blue-500/50 text-xs">
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="w-5 text-center font-extrabold text-ds-cyan">7</span>
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=EliRomulo" class="w-7 h-7 rounded-lg bg-ds-card border border-ds-cyan/50">
+                                            <span class="font-bold text-ds-cyan">Você (Eli Rômulo)</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-extrabold text-ds-textWhite block" id="user-rank-points">2.450</span>
+                                            <span class="text-[9px] text-ds-cyan">Nível 4</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- VIEW 2: CATEGORIAS VIEW -->
+                <div id="view-categories" class="hidden space-y-6">
+                    <div class="bg-ds-card border border-ds-border p-6 rounded-3xl">
+                        <h2 class="text-xl font-bold text-ds-textWhite mb-2">Escolha uma Categoria</h2>
+                        <p class="text-xs text-ds-text mb-6">Selecione o assunto da estrutura de dados para praticar questões focadas.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="categories-grid">
+                            <!-- Category Cards injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: RANKING COMPLETO VIEW -->
+                <div id="view-ranking" class="hidden space-y-6">
+                    <div class="bg-ds-card border border-ds-border p-6 rounded-3xl">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-ds-border gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-ds-textWhite">Ranking dos Alunos</h2>
+                                <p class="text-xs text-ds-text">Acompanhe sua classificação na disciplina de Estrutura de Dados</p>
+                            </div>
+                            <div class="flex bg-ds-bg p-1 rounded-xl border border-ds-border text-xs">
+                                <button class="px-3 py-1.5 rounded-lg bg-ds-card text-ds-textWhite font-bold">Geral</button>
+                                <button class="px-3 py-1.5 rounded-lg text-ds-text hover:text-white">Turma ADS</button>
+                                <button class="px-3 py-1.5 rounded-lg text-ds-text hover:text-white">Semanal</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto mt-6">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-ds-text border-b border-ds-border">
+                                        <th class="pb-3 px-2"># Pos</th>
+                                        <th class="pb-3">Jogador</th>
+                                        <th class="pb-3">Pontos</th>
+                                        <th class="pb-3">Nível</th>
+                                        <th class="pb-3">Precisão</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-ds-border text-ds-textWhite" id="full-leaderboard-body">
+                                    <!-- Table Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: CONQUISTAS VIEW -->
+                <div id="view-achievements" class="hidden space-y-6">
+                    <div class="bg-ds-card border border-ds-border p-6 rounded-3xl">
+                        <h2 class="text-xl font-bold text-ds-textWhite mb-2">Quadro de Conquistas</h2>
+                        <p class="text-xs text-ds-text mb-6">Complete desafios técnicos em ordenação, árvores e ponteiros para desbloquear insígnias.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="badges-grid">
+                            <!-- Badges injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // QUESTION BANK (Based strictly on UNIASSELVI Data Structures Material & Resolved Quizzes)
+        const questionsData = [
+            {
+                id: 1,
+                category: "Listas",
+                categoryTitle: "Arrays e Listas",
+                question: "Qual das alternativas abaixo melhor descreve uma lista duplamente encadeada (DLL)?",
+                options: [
+                    "É uma estrutura de dados que permite acesso direto por índice a qualquer elemento.",
+                    "Possui apenas um ponteiro em cada nó que aponta para o próximo elemento.",
+                    "Cada nó possui dois ponteiros: um para o próximo e outro para o anterior.",
+                    "É uma variação da pilha, onde o último elemento inserido é o primeiro a ser removido."
+                ],
+                correctIndex: 2,
+                explanation: "Em uma lista duplamente encadeada, cada nó é composto por um campo de dados e duas referências (ponteiros): uma para o nó anterior e outra para o nó posterior, permitindo navegação bidirecional.",
+                tip: "Lembre-se: Duplamente encadeada = 2 ponteiros (Anterior e Próximo)."
+            },
+            {
+                id: 2,
+                category: "Ordenação",
+                categoryTitle: "Algoritmos Ordenação",
+                question: "Sobre os algoritmos BubbleSort e SelectionSort, assinale a afirmativa correta:",
+                options: [
+                    "O BubbleSort também é conhecido como ordenação por flutuação e ambos possuem desempenho quadrático O(n²).",
+                    "O SelectionSort é um algoritmo estritamente recursivo baseado na função partition().",
+                    "O BubbleSort é o algoritmo de ordenação mais veloz para grandes volumes de dados.",
+                    "Nenhum deles necessita de trocas de elementos no vetor para realizar a ordenação."
+                ],
+                correctIndex: 0,
+                explanation: "O BubbleSort faz os maiores elementos 'flutuarem' para o final do arranjo. Tanto o BubbleSort quanto o SelectionSort possuem complexidade quadrática O(n²), figurando entre os piores desempenhos para grandes massas de dados.",
+                tip: "BubbleSort = Bolha/Flutuação. Ambos possuem custo O(n²)."
+            },
+            {
+                id: 3,
+                category: "Ordenação",
+                categoryTitle: "Algoritmos Ordenação",
+                question: "A técnica de ordenação Mergesort baseia-se no conceito de 'dividir para conquistar'. Como ela funciona?",
+                options: [
+                    "Sorteia um elemento pivô e coloca os menores à esquerda e maiores à direita.",
+                    "Divide o vetor em duas partes sucessivamente até restarem subvetores de 1 elemento, e depois realiza a intercalaço (junção) ordenada.",
+                    "Percorre o vetor em um único laço de repetição fazendo trocas diretas do primeiro com o último.",
+                    "Remove o elemento e insere diretamente na sua posição ideal em um vetor auxiliar fixo."
+                ],
+                correctIndex: 1,
+                explanation: "O MergeSort divide recursivamente o arranjo ao meio até obter partes unitárias (com 1 elemento) e depois executa o procedimento de junção (merge) recompondo o vetor ordenado.",
+                tip: "MergeSort = Divisão recursiva ao meio + Junção (Merge)."
+            },
+            {
+                id: 4,
+                category: "Árvores",
+                categoryTitle: "Árvores",
+                question: "Considerando a representação estática de uma árvore binária em um vetor com índice inicial 1 (Raiz na posição 1, filho esquerdo em 2*P e filho direito em 2*P + 1), em qual posição o nó 'I' (filho direito de 'E', que por sua vez é filho direito do filho esquerdo 'B') estará armazenado?",
+                options: [
+                    "Posição 7",
+                    "Posição 9",
+                    "Posição 11",
+                    "Posição 15"
+                ],
+                correctIndex: 2,
+                explanation: "Cálculo do mapeamento no vetor: Raiz A na pos 1 -> B (filho esq) pos 2*1=2 -> E (filho dir de B) pos 2*2+1=5 -> I (filho dir de E) pos 2*5+1=11.",
+                tip: "Use a fórmula: Filho Direiro = 2 * P + 1."
+            },
+            {
+                id: 5,
+                category: "Ordenação",
+                categoryTitle: "Algoritmos Ordenação",
+                question: "Qual das seguintes afirmações sobre o algoritmo ShellSort está correta?",
+                options: [
+                    "O ShellSort é uma evolução e refinamento do algoritmo InsertionSort que compara elementos separados por saltos (gaps).",
+                    "O ShellSort é uma técnica baseada em busca binária e filas de prioridade.",
+                    "O ShellSort utiliza a função partition() igual ao QuickSort.",
+                    "O ShellSort é um algoritmo com desempenho estritamente pior do que o BubbleSort em todos os cenários."
+                ],
+                correctIndex: 0,
+                explanation: "Criado por Donald Shell, o ShellSort é considerado uma técnica refinada de ordenação por inserção (InsertionSort), aumentando a eficiência ao comparar elementos distantes através de saltos.",
+                tip: "ShellSort = Refinamento do InsertionSort usando saltos."
+            },
+            {
+                id: 6,
+                category: "Árvores",
+                categoryTitle: "Árvores",
+                question: "Em uma estrutura de árvore, sobre os conceitos de nós e parentesco, é correto afirmar:",
+                options: [
+                    "A raiz é o vértice intermediário e possui múltiplos nós-pai.",
+                    "A raiz é o nó inicial e não possui nó-pai; se V é pai de W, então W é filho de V.",
+                    "Todos os nós de uma árvore binária obrigatoriamente possuem 2 filhos.",
+                    "Folhas são nós que possuem mais de três subárvores associadas."
+                ],
+                correctIndex: 1,
+                explanation: "A raiz é o ponto de origem de uma árvore e não possui nó-pai. Na relação hierárquica, a raiz de uma subárvore é o nó-pai e seus descendentes diretos são os nós-filhos.",
+                tip: "Raiz = Sem pai. V pai de W => W filho de V."
+            },
+            {
+                id: 7,
+                category: "Ordenação",
+                categoryTitle: "Algoritmos Ordenação",
+                question: "No algoritmo QuickSort, qual é o papel do 'Pivô'?",
+                options: [
+                    "É um ponteiro que aponta sempre para a raiz de uma árvore binária.",
+                    "É o elemento escolhido do vetor que serve de referência para particionar os dados (menores à esquerda, maiores à direita) e que fica na sua posição final após a partição.",
+                    "É uma variável utilizada apenas no final do algoritmo para contar a quantidade de trocas.",
+                    "É o valor máximo permitido dentro do arranjo estático."
+                ],
+                correctIndex: 1,
+                explanation: "O QuickSort seleciona um elemento chamado pivô e rearranja o vetor de forma que valores menores fiquem antes dele e maiores depois dele. Após a partição, o pivô assume sua posição definitiva.",
+                tip: "QuickSort = Partição com Pivô."
+            }
+        ];
+
+        // USER STATE
+        let userState = {
+            name: "Eli Rômulo",
+            level: 4,
+            title: "DevMaster",
+            xp: 650,
+            xpMax: 1000,
+            points: 2450,
+            streak: 12,
+            rank: 7,
+            currentQuestionIdx: 0,
+            selectedOptionIdx: null,
+            isAnswerConfirmed: false
+        };
+
+        // LEADERBOARD DATA
+        const leaderboardData = [
+            { pos: 1, name: "DevMaster", points: 3980, level: 8, accuracy: "98%" },
+            { pos: 2, name: "CodeQueen", points: 3760, level: 7, accuracy: "95%" },
+            { pos: 3, name: "Algoritmo", points: 3420, level: 6, accuracy: "91%" },
+            { pos: 4, name: "ByteHero", points: 2950, level: 5, accuracy: "89%" },
+            { pos: 5, name: "TechNinja", points: 2810, level: 5, accuracy: "87%" },
+            { pos: 6, name: "BinaryFox", points: 2620, level: 4, accuracy: "85%" },
+            { pos: 7, name: "Você (Eli Rômulo)", points: 2450, level: 4, accuracy: "100%", isUser: true },
+            { pos: 8, name: "StackDev", points: 1980, level: 3, accuracy: "80%" },
+            { pos: 9, name: "DataFreak", points: 1750, level: 3, accuracy: "78%" },
+            { pos: 10, name: "PointerPro", points: 1500, level: 2, accuracy: "75%" }
+        ];
+
+        // CATEGORIES DATA
+        const categoriesData = [
+            { id: 'arrays', title: 'Arrays e Listas', desc: 'Vetores, matrizes, listas encadeadas e duplamente encadeadas.', icon: 'fa-list-check', badge: 'Fácil', color: 'border-ds-cyan text-ds-cyan' },
+            { id: 'arvores', title: 'Árvores', desc: 'Árvores binárias, representação em vetores, BST, traversals.', icon: 'fa-network-wired', badge: 'Médio', color: 'border-ds-green text-ds-green' },
+            { id: 'grafos', title: 'Grafos', desc: 'Matriz de adjacência, caminhos mínimos, vértices e arestas.', icon: 'fa-diagram-project', badge: 'Difícil', color: 'border-ds-purple text-ds-purple' },
+            { id: 'pilhas', title: 'Pilhas e Filas', desc: 'LIFO, FIFO, alocação encadeada x estática, enfileiramento.', icon: 'fa-layer-group', badge: 'Fácil', color: 'border-ds-yellow text-ds-yellow' },
+            { id: 'ordenacao', title: 'Algoritmos de Ordenação', desc: 'BubbleSort, SelectionSort, InsertionSort, ShellSort, QuickSort, MergeSort.', icon: 'fa-arrow-down-short-wide', badge: 'Médio', color: 'border-blue-400 text-blue-400' },
+            { id: 'ponteiros', title: 'Ponteiros e Memória', desc: 'Endereçamento de memória, ponteiros para structs, * e & em C/C++.', icon: 'fa-memory', badge: 'Médio', color: 'border-pink-500 text-pink-500' }
+        ];
+
+        // BADGES DATA
+        const badgesData = [
+            { id: 1, title: 'Primeiro Acerto', desc: 'Acertou sua primeira questão técnica com sucesso.', icon: 'fa-bullseye', pts: '+50 pts', color: 'text-ds-green bg-ds-green/10 border-ds-green/30', unlocked: true },
+            { id: 2, title: 'Sequência 5', desc: 'Manteve 5 respostas corretas em sequência.', icon: 'fa-fire', pts: '+100 pts', color: 'text-orange-400 bg-orange-500/10 border-orange-500/30', unlocked: true },
+            { id: 3, title: 'Mestre das Listas', desc: 'Completou todas as questões sobre Listas Encadeadas.', icon: 'fa-cubes', pts: '+200 pts', color: 'text-ds-purple bg-ds-purple/10 border-ds-purple/30', unlocked: true },
+            { id: 4, title: 'Rumo ao Top 10', desc: 'Alcançou a 7ª posição no ranking da faculdade.', icon: 'fa-crown', pts: '+500 pts', color: 'text-ds-yellow bg-ds-yellow/10 border-ds-yellow/30', unlocked: true },
+            { id: 5, title: 'Rei do QuickSort', desc: 'Dominou o particionamento com pivô e recursão.', icon: 'fa-bolt', pts: '+300 pts', color: 'text-ds-cyan bg-ds-cyan/10 border-ds-cyan/30', unlocked: false },
+            { id: 6, title: 'Explorador de Árvores', desc: 'Mapeou nós e posições de vetores sem falhas.', icon: 'fa-tree', pts: '+250 pts', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', unlocked: false }
+        ];
+
+        // INITIALIZATION ON DOM LOAD
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            renderCurrentQuestion();
+            renderLeaderboard();
+            renderCategories();
+            renderBadges();
+            setupEventListeners();
+        });
+
+        // NAVIGATION HANDLER
+        function initNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn, .nav-switch');
+            
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const viewTarget = btn.getAttribute('data-view') || btn.getAttribute('data-target');
+                    
+                    if (!viewTarget) return;
+
+                    // Update Active Class in Sidebar
+                    document.querySelectorAll('.nav-btn').forEach(b => {
+                        if (b.getAttribute('data-view') === viewTarget) {
+                            b.className = 'nav-btn active flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-textWhite bg-blue-600/20 border border-blue-500/40 text-ds-cyan transition';
+                        } else {
+                            b.className = 'nav-btn flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm text-ds-text hover:text-ds-textWhite hover:bg-ds-card transition';
+                        }
+                    });
+
+                    // Hide All Views
+                    ['dashboard', 'categories', 'ranking', 'achievements'].forEach(v => {
+                        const el = document.getElementById(`view-${v}`);
+                        if (el) el.classList.add('hidden');
+                    });
+
+                    // Show Selected View
+                    const targetEl = document.getElementById(`view-${viewTarget}`);
+                    if (targetEl) {
+                        targetEl.classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        // RENDER CURRENT QUESTION
+        function renderCurrentQuestion() {
+            const q = questionsData[userState.currentQuestionIdx];
+            userState.selectedOptionIdx = null;
+            userState.isAnswerConfirmed = false;
+
+            // DOM Elements
+            document.getElementById('q-category').innerText = q.category;
+            document.getElementById('q-number-text').innerText = `Questão ${userState.currentQuestionIdx + 1} de ${questionsData.length}`;
+            document.getElementById('current-score-val').innerText = userState.points;
+            document.getElementById('q-title').innerText = q.question;
+            
+            // Progress Bar Calculation
+            const progressPct = ((userState.currentQuestionIdx + 1) / questionsData.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            // Reset Options Container
+            const stack = document.getElementById('options-stack');
+            stack.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = `option-card w-full text-left p-4 rounded-2xl bg-ds-bg border border-ds-border text-ds-textWhite text-xs sm:text-sm font-medium flex items-center space-x-3 cursor-pointer`;
+                optBtn.dataset.index = idx;
+
+                optBtn.innerHTML = `
+                    <span class="opt-badge w-7 h-7 rounded-xl bg-ds-card border border-ds-border flex items-center justify-center font-bold text-xs text-ds-cyan shrink-0">
+                        ${optionLetters[idx]}
+                    </span>
+                    <span class="flex-1 leading-snug">${optText}</span>
+                    <i class="fa-solid fa-circle-check text-ds-green text-base opacity-0 check-icon"></i>
+                `;
+
+                optBtn.addEventListener('click', () => handleOptionSelect(idx));
+                stack.appendChild(optBtn);
+            });
+
+            // Reset Explanation Box
+            const expBox = document.getElementById('explanation-box');
+            expBox.classList.add('hidden');
+
+            // Reset Confirm Button
+            const btnConfirm = document.getElementById('btn-confirm');
+            btnConfirm.disabled = true;
+            document.getElementById('btn-confirm-text').innerText = "Confirmar Resposta";
+        }
+
+        // HANDLE OPTION SELECTION
+        function handleOptionSelect(idx) {
+            if (userState.isAnswerConfirmed) return;
+
+            userState.selectedOptionIdx = idx;
+
+            const allOptions = document.querySelectorAll('#options-stack .option-card');
+            allOptions.forEach((btn, i) => {
+                if (i === idx) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+
+            // Enable Confirm Button
+            document.getElementById('btn-confirm').disabled = false;
+        }
+
+        // CONFIRM ANSWER / NEXT QUESTION
+        function setupEventListeners() {
+            const btnConfirm = document.getElementById('btn-confirm');
+            const btnSkip = document.getElementById('btn-skip');
+            const btnStartHero = document.getElementById('btn-start-hero');
+
+            btnStartHero.addEventListener('click', () => {
+                // Scroll down to Quiz Card
+                document.getElementById('quiz-card-container').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            btnSkip.addEventListener('click', () => {
+                if (userState.points >= 10) {
+                    userState.points -= 10;
+                    updateUserStats();
+                    showToast("Questão Pulada", "-10 pontos descontados do seu saldo.", "warning");
+                }
+                nextQuestion();
+            });
+
+            btnConfirm.addEventListener('click', () => {
+                if (userState.selectedOptionIdx === null) return;
+
+                if (!userState.isAnswerConfirmed) {
+                    // CONFIRM STEP
+                    userState.isAnswerConfirmed = true;
+                    const q = questionsData[userState.currentQuestionIdx];
+                    const allOptions = document.querySelectorAll('#options-stack .option-card');
+
+                    allOptions.forEach((btn, i) => {
+                        btn.classList.add('disabled');
+                        const checkIcon = btn.querySelector('.check-icon');
+
+                        if (i === q.correctIndex) {
+                            btn.classList.add('correct');
+                            if (checkIcon) checkIcon.classList.remove('opacity-0');
+                        } else if (i === userState.selectedOptionIdx) {
+                            btn.classList.add('wrong');
+                        }
+                    });
+
+                    // Check if user is correct
+                    const isCorrect = userState.selectedOptionIdx === q.correctIndex;
+
+                    if (isCorrect) {
+                        userState.points += 100;
+                        userState.xp += 80;
+                        showToast("Resposta Correta!", "+100 pontos e +80 XP acumulados!", "success");
+                    } else {
+                        showToast("Resposta Incorreta", "Veja a explicação técnica abaixo.", "error");
+                    }
+
+                    // Show Explanation
+                    const expBox = document.getElementById('explanation-box');
+                    document.getElementById('explanation-text').innerText = q.explanation;
+                    expBox.classList.remove('hidden');
+
+                    updateUserStats();
+
+                    // Change Confirm Button to "Próxima Questão"
+                    document.getElementById('btn-confirm-text').innerText = "Próxima Questão";
+                    const btnIcon = btnConfirm.querySelector('i');
+                    if (btnIcon) btnIcon.className = "fa-solid fa-arrow-right text-xs";
+
+                } else {
+                    // ADVANCE TO NEXT QUESTION
+                    nextQuestion();
+                }
+            });
+        }
+
+        function nextQuestion() {
+            if (userState.currentQuestionIdx < questionsData.length - 1) {
+                userState.currentQuestionIdx++;
+                renderCurrentQuestion();
+            } else {
+                // Quiz Batch Finished
+                userState.currentQuestionIdx = 0;
+                showToast("Simulado Concluído! 🏆", "Você completou o lote de questões acadêmicas!", "success");
+                renderCurrentQuestion();
+            }
+        }
+
+        // UPDATE UI STATS
+        function updateUserStats() {
+            // Check Level Up
+            if (userState.xp >= userState.xpMax) {
+                userState.level++;
+                userState.xp = userState.xp - userState.xpMax;
+                userState.xpMax += 500;
+                showToast("NOVO NÍVEL ALCANÇADO!", `Parabéns! Você avançou para o Nível ${userState.level}!`, "level");
+            }
+
+            document.getElementById('stat-points').innerText = userState.points;
+            document.getElementById('current-score-val').innerText = userState.points;
+            document.getElementById('user-rank-points').innerText = userState.points;
+            document.getElementById('user-xp-text').innerText = `${userState.xp} / ${userState.xpMax} XP`;
+
+            const pct = Math.min(100, Math.round((userState.xp / userState.xpMax) * 100));
+            document.getElementById('user-xp-bar').style.width = `${pct}%`;
+            document.getElementById('header-user-level').innerText = `Nível ${userState.level}`;
+        }
+
+        // RENDER LEADERBOARD
+        function renderLeaderboard() {
+            const tbody = document.getElementById('full-leaderboard-body');
+            tbody.innerHTML = '';
+
+            leaderboardData.forEach(player => {
+                const tr = document.createElement('tr');
+                tr.className = player.isUser ? "bg-blue-600/20 font-bold" : "hover:bg-ds-card/50";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-2">
+                        ${player.pos === 1 ? '<i class="fa-solid fa-crown text-ds-yellow"></i>' : `#${player.pos}`}
+                    </td>
+                    <td class="py-3 flex items-center space-x-2">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${player.name}" class="w-6 h-6 rounded-md bg-ds-card">
+                        <span class="${player.isUser ? 'text-ds-cyan font-bold' : ''}">${player.name}</span>
+                    </td>
+                    <td class="py-3 font-extrabold text-ds-textWhite">${player.points}</td>
+                    <td class="py-3"><span class="bg-ds-card border border-ds-border px-2 py-0.5 rounded text-[10px]">Nível ${player.level}</span></td>
+                    <td class="py-3 text-ds-green font-semibold">${player.accuracy}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // RENDER CATEGORIES
+        function renderCategories() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+
+            categoriesData.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = "bg-ds-bg border border-ds-border p-5 rounded-2xl hover:border-ds-borderLight transition cursor-pointer flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-ds-card border ${cat.color} flex items-center justify-center text-lg">
+                                <i class="fa-solid ${cat.icon}"></i>
+                            </div>
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${cat.color}">${cat.badge}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-ds-textWhite mb-1">${cat.title}</h4>
+                        <p class="text-xs text-ds-text leading-relaxed mb-4">${cat.desc}</p>
+                    </div>
+                    <button class="w-full py-2 rounded-xl bg-ds-card border border-ds-border hover:bg-ds-cardHover text-ds-textWhite text-xs font-bold transition">
+                        Iniciar Prática
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // RENDER BADGES
+        function renderBadges() {
+            const grid = document.getElementById('badges-grid');
+            grid.innerHTML = '';
+
+            badgesData.forEach(b => {
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-2xl bg-ds-bg border border-ds-border flex flex-col items-center text-center ${b.unlocked ? '' : 'opacity-50'}`;
+                card.innerHTML = `
+                    <div class="w-14 h-14 rounded-2xl border ${b.color} flex items-center justify-center text-2xl mb-3">
+                        <i class="fa-solid ${b.icon}"></i>
+                    </div>
+                    <h4 class="font-bold text-xs text-ds-textWhite mb-1">${b.title}</h4>
+                    <p class="text-[11px] text-ds-text leading-tight mb-3">${b.desc}</p>
+                    <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${b.unlocked ? 'bg-ds-green/10 text-ds-green' : 'bg-ds-card text-ds-text'}">
+                        ${b.unlocked ? b.pts : 'Bloqueado'}
+                    </span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // TOAST NOTIFICATIONS SYSTEM
+        function showToast(title, msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastTitle.innerText = title;
+            toastMsg.innerText = msg;
+
+            if (type === 'success') {
+                toastIcon.className = "w-8 h-8 rounded-full flex items-center justify-center bg-ds-green/20 text-ds-green";
+                toastIcon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+            } else if (type === 'error') {
+                toastIcon.className = "w-8 h-8 rounded-full flex items-center justify-center bg-ds-red/20 text-ds-red";
+                toastIcon.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+            } else if (type === 'level') {
+                toastIcon.className = "w-8 h-8 rounded-full flex items-center justify-center bg-ds-yellow/20 text-ds-yellow";
+                toastIcon.innerHTML = `<i class="fa-solid fa-bolt"></i>`;
+            }
+
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
