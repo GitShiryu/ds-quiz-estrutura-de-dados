@@ -2,51 +2,89 @@
 
 Arquivo de retomada: se a sessão cair, leia este arquivo primeiro.
 
+Repositório: https://github.com/GitShiryu/ds-quiz-estrutura-de-dados (público)
+
 ## Em andamento
 
-**2026-10-30 — Melhorias no app + publicação no GitHub público**
-
-- Onde: `D:\quiz-estruturas-dados` (`index.html`, `style.css`, `script.js`).
-- O que: rodada de melhorias (sequência real, responsivo, teclado, acessibilidade,
-  revisar erros), documentação (`README.md`, `LICENSE`, `.gitignore`) e publicação
-  do repositório público no GitHub (conta `GitShiryu`).
-- Critério de pronto: suíte de testes em `teste/` passando 100% no Chrome headless,
-  repositório público no ar e card do portfólio atualizado com o link do GitHub.
+Nada em andamento.
 
 ## Próximos passos
 
-1. Implementar as melhorias e rodar a suíte de testes.
-2. Criar `README.md`, `LICENSE` (MIT) e `.gitignore`.
-3. `git init` + commit inicial + push para repositório público no GitHub.
-4. Atualizar o card do portfólio (MagenCode) com o link do repositório e republicar.
-5. Pendências que o dono ainda não decidiu:
-   - Deploy público (GitHub Pages ou Vercel) para o card virar "demo no ar".
-   - Se o site público tiver deploy, adicionar os cards "Conheça outros projetos".
+1. **Decisão pendente do dono**: deploy público (GitHub Pages ou Vercel). Hoje o card do
+   portfólio está como "em laboratório"; com deploy viraria "demo no ar".
+2. Se houver deploy público, incluir os cards "Conheça outros projetos" no rodapé do app
+   (padrão dos demais sites do dono) e acrescentar o quiz na lista dos outros sites.
+3. Banco de questões tem 9 itens; ampliar quando houver material novo (basta editar
+   `questionsDB` no topo do `script.js`, o resto se ajusta sozinho).
+4. Avaliar embaralhar a ordem das alternativas (hoje o gabarito é um índice fixo, então
+   embaralhar exige remapear `correct`).
 
 ## Decisões do dono
 
-- 2026-10-30: o projeto entra no portfólio (https://romulofullstack.duckdns.org),
-  com print do sistema no banner, igual aos outros projetos.
+- 2026-10-30: o projeto entra no portfólio (https://romulofullstack.duckdns.org), com print
+  do sistema no banner, igual aos outros projetos.
 - 2026-10-30: repositório no GitHub deve ser **público**.
 - Contato público do dono: eliromulo@gmail.com (sem telefone).
+- A versão de arquivo único com Tailwind virou histórico em `legado/`; quem manda é a
+  versão da raiz.
 
 ## Concluído
+
+**2026-10-30 — Melhorias, documentação e publicação no GitHub**
+
+Commits `97afca7` (inicial) e `054fcf5` (LF no runner), ambos no `main` do repositório
+público.
+
+Melhorias:
+- Sequência de dias ("🔥 N dias consecutivos") passou a ser contada de verdade pela data da
+  última visita, em vez de estar fixa em 12 no HTML. A regra ficou numa função pura
+  (`proximaSequencia`), separada do storage e do relógio, para poder ser testada.
+- Rodada "Revisar erros": card na aba Categorias (só aparece quando há erro) e botão na tela
+  final. Monta uma rodada com as questões erradas e as libera para responder de novo.
+- Atalhos de teclado na aba Início: `A`–`E` / `1`–`5` escolhem, `Enter` confirma e avança,
+  `←` volta. Não agem fora da aba Início.
+- Acessibilidade: foco visível, link "pular para o conteúdo", `role="tab"` e `aria-selected`
+  no menu, `aria-live` na explicação, `role="progressbar"` nas barras, `aria-pressed` nas
+  alternativas e `prefers-reduced-motion`.
+- Layout responsivo (a partir de 860px de largura): menu vira linha, cabeçalho empilha,
+  botões ocupam a largura toda e o ranking reorganiza as colunas em áreas de grid.
+- Explicação fica vermelha quando a resposta está errada, em vez de verde sempre.
+- Tela final mostra percentual e um recado conforme o desempenho.
+- "Zerar progresso" passou a pedir confirmação.
+
+Documentação e repositório:
+- `README.md` com como rodar, o que tem, como testar, estrutura, como adicionar questão e
+  dois prints (`docs/tela-quiz.png`, `docs/tela-categorias.png`).
+- `LICENSE` (MIT — o GitHub detectou corretamente), `.gitignore` e `.gitattributes`
+  (força LF no `teste/rodar-testes.sh`, senão o CRLF do Windows quebraria em Linux).
+- `legado/ds_quiz_estrutura_de_dados.html`: protótipo original movido para lá.
+- Topics configurados no repositório.
+
+VERIFICADO de verdade:
+- Suíte `teste/rodar-testes.sh`: **57/57 passaram**, exit 0.
+- A suíte foi conferida contra falso-positivo: com uma asserção quebrada de propósito, ela
+  reporta 56/57 e sai com código 1.
+- Layout estreito medido no Chrome (`scrollWidth == clientWidth`, sem overflow) e conferido
+  por print. Observação: o Chrome headless tem viewport mínimo de 485px, então larguras
+  menores que isso não foram medidas — o layout é fluido, mas 360px não foi testado.
+- Repositório conferido pela API: `PUBLIC`, branch `main`, licença `MIT`, 11 itens na raiz,
+  imagem do README retornando 200 no raw.
+- Portfólio republicado e conferido no ar: link do GitHub presente na página e banner
+  servindo 200 com o tamanho novo.
 
 **2026-10-30 — Abas Categorias e Ranking + correções**
 
 - `switchTab()` implementado (não existia; os botões do menu davam erro no console).
-- Telas novas: Categorias (progresso e acertos por assunto) e Ranking.
-- Corrigidos: botão "Pular" sem `onclick`; pontuação que dobrava ao voltar numa
-  questão; `.view-panel` sem regra CSS; tela final que afirmava "nota máxima"
-  independente do desempenho; nível fixo no HTML.
+- Corrigidos: botão "Pular" sem `onclick`; pontuação que dobrava ao voltar numa questão;
+  `.view-panel` sem regra CSS; tela final que afirmava "nota máxima" independente do
+  desempenho; nível fixo no HTML.
 - Verificado: 26 checagens automatizadas no Chrome headless, todas passando.
 
 **2026-10-30 — Entrada no portfólio**
 
-- Card "DS Quiz — Estrutura de Dados" adicionado à seção "Em desenvolvimento" do
-  portfólio, com banner `images/project-quiz-ds.png`.
-- Contadores "em laboratório" atualizados de 16 para 17.
-- Publicado via `publish.sh` e verificado no ar (HTTP 200 na página e na imagem).
+- Card "DS Quiz — Estrutura de Dados" na seção "Em desenvolvimento" do portfólio, com banner.
+- Contadores "em laboratório" de 16 para 17.
+- Publicado via `publish.sh` e verificado no ar.
 
 ## Como retomar
 
