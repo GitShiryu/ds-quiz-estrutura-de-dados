@@ -1,0 +1,6 @@
+* text=auto
+
+# o runner precisa de LF para rodar em Linux/macOS
+*.sh text eol=lf
+
+*.png binary
